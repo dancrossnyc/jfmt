@@ -1,6 +1,10 @@
 //! Print binary numbers, as in the "j" format in the mdb
 //! debugger for illumos/Solaris.
 
+// There are a number of arrow characters to choose from:
+// △,↑,˄,˰,⌃,˄,⭡,▲, and ^.  We use ▴.
+// Similarly, for corners we can use └, ╰, or +.
+
 fn lexnum(num: &str) -> (u32, &str) {
     match num {
         "0" => (10, "0"),
@@ -45,7 +49,7 @@ fn jfmt(num: u128) {
 
     println!("{PREFIX}{num:b}");
     for k in 0..v.len() {
-        cs[k] = if v[k] { '▲' } else { ' ' };
+        cs[k] = if v[k] { '▴' } else { ' ' };
     }
     puts(&cs);
     for k in 0..v.len() {
@@ -62,7 +66,7 @@ fn jfmt(num: u128) {
             cs[k] = match (k, b) {
                 (k, true) if k < off => '│',
                 (k, _) if k < off => ' ',
-                (k, _) if k == off => '└',
+                (k, _) if k == off => '╰',
                 _ => '─',
             };
         }
