@@ -52,10 +52,6 @@ fn jfmt(num: u128) {
         cs[k] = if v[k] { '▴' } else { ' ' };
     }
     puts(&cs);
-    for k in 0..v.len() {
-        cs[k] = if v[k] { '│' } else { ' ' };
-    }
-    puts(&cs);
 
     let max1 = ones.iter().last().map_or(0, |&l| l);
     let bit_width = max1.checked_ilog10().unwrap_or(0) as usize + 1;
