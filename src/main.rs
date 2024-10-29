@@ -3,32 +3,30 @@
 
 // There are a number of arrow characters to choose from:
 // △,↑,˄,˰,⌃,˄,⭡,▲, and ^.  We use ▴.
-// Similarly, for corners we can use └, ╰, or +.
+// Similarly, for corners: + and └. We use ╰.
 
-fn lexnum(num: &str) -> (u32, &str) {
-    match num {
-        "0" => (10, "0"),
+use std::num::ParseIntError;
+
+fn parse_num(num: &str) -> Result<u128, ParseIntError> {
+    let (radix, numstr) = match num {
+        "0" => return Ok(0),
         s if s.starts_with("0x") || s.starts_with("0X") => (16, &s[2..]),
         s if s.starts_with("0t") || s.starts_with("0T") => (10, &s[2..]),
         s if s.starts_with("0b") || s.starts_with("0B") => (2, &s[2..]),
         s if s.starts_with("0") => (8, &s[0..]),
         s => (10, s),
-    }
+    };
+    u128::from_str_radix(numstr, radix)
 }
 
 const PREFIX: &str = "                ";
 
-fn puts_suffix(s: &[char], suffix: &str) {
-    print!("{PREFIX}");
-    for &c in s.iter() {
-        print!("{c}");
-    }
-    print!("{suffix}");
+fn puts(s: &[char], suffix: &str) {
+    print!("{PREFIX}{s}{suffix}", s = String::from_iter(s));
 }
 
-fn puts(s: &[char]) {
-    puts_suffix(s, "");
-    println!();
+fn putsln(s: &[char]) {
+    puts(s, "\n");
 }
 
 fn jfmt(num: u128) {
@@ -51,7 +49,7 @@ fn jfmt(num: u128) {
     for k in 0..v.len() {
         cs[k] = if v[k] { '▴' } else { ' ' };
     }
-    puts(&cs);
+    putsln(&cs);
 
     let max1 = ones.iter().last().map_or(0, |&l| l);
     let bit_width = max1.checked_ilog10().unwrap_or(0) as usize + 1;
@@ -66,7 +64,7 @@ fn jfmt(num: u128) {
                 _ => '─',
             };
         }
-        puts_suffix(&cs, "── ");
+        puts(&cs, "── ");
         println!(
             "bit {this1:bit_width$} mask 0x{mask:0>mask_width$x}",
             mask = 1u128 << this1
@@ -85,10 +83,10 @@ fn main() {
         eprintln!("Usage: jfmt <number>");
         std::process::exit(1);
     }
-    let (radix, numstr) = lexnum(&args[1]);
-    let Ok(num) = u128::from_str_radix(numstr, radix) else {
-        eprintln!("jfmt: could not parse number '{arg}'", arg = args[1]);
+    let arg = &args[1];
+    let num = parse_num(arg).unwrap_or_else(|e| {
+        eprintln!("jfmt: could not parse number '{arg}': {e:?}");
         std::process::exit(1);
-    };
+    });
     jfmt(num);
 }
