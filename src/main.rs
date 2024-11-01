@@ -8,6 +8,9 @@
 use std::num::ParseIntError;
 
 fn parse_num(num: &str) -> Result<u128, ParseIntError> {
+    let mut num = num.to_owned();
+    num.retain(|c| c != '_');
+    let num = num.as_str();
     let (radix, numstr) = match num {
         "0" => return Ok(0),
         s if s.starts_with("0x") || s.starts_with("0X") => (16, &s[2..]),
