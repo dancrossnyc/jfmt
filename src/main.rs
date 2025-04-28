@@ -14,8 +14,11 @@ fn parse_num(num: &str) -> Result<u128, ParseIntError> {
     let (radix, numstr) = match num {
         "0" => return Ok(0),
         s if s.starts_with("0x") || s.starts_with("0X") => (16, &s[2..]),
+        s if s.ends_with("h") || s.ends_with("H") => (16, &s[..s.len() - 1]),
         s if s.starts_with("0t") || s.starts_with("0T") => (10, &s[2..]),
         s if s.starts_with("0b") || s.starts_with("0B") => (2, &s[2..]),
+        s if s.starts_with("0i") || s.starts_with("0I") => (2, &s[2..]),
+        s if s.ends_with("b") || s.ends_with("B") => (2, &s[..s.len() - 1]),
         s if s.starts_with("0") => (8, &s[0..]),
         s => (10, s),
     };
